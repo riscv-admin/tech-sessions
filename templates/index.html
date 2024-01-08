@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical Sessions | Call for Presenters</title>
+    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
+    <style>
+        body, input, select, textarea, button {
+            font-family: 'Open Sans', sans-serif;
+            color: #282828; /* Dark gray as the primary text color */
+        }
+
+        .container {
+            background-color: white;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #202124;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .header img {
+            max-width: 100%; /* Ensures the image is responsive */
+            height: auto;
+        }
+
+        label {
+            color: #555; /* Slightly lighter shade for labels */
+        }
+
+        input[type=text],
+        input[type=date],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type=checkbox] {
+            margin-right: 10px;
+        }
+
+        input[type=submit] {
+            width: 100%;
+            background-color: #4CAF50; /* Keep the button color or change as needed */
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+
+        .date-label, .date-input {
+            display: inline-block;
+            margin-right: 10px; /* Adjust spacing as needed */
+        }
+
+        .date-input {
+            margin-bottom: 10px; /* Spacing between each date field */
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media screen and (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="/static/images/riscv.png" alt="RISC-V Logo">
+            <h1>Technical Sessions | Call for Presenters</h1>
+        </div>
+        <form action="/submit" method="post">
+            <label for="presenterName">Presenter Name:</label>
+            <input type="text" id="presenterName" name="presenterName" required><br>
+
+            <label for="linkedin">LinkedIn Profile:</label>
+            <input type="text" id="linkedin" name="linkedin" placeholder="https://www.linkedin.com/in/username"><br>
+
+            <label for="presenterBio">Short Bio of the Presenter:</label>
+            <textarea id="presenterBio" name="presenterBio"></textarea><br>
+
+            <label for="classTheme">Presentation Theme:</label>
+            <select id="classTheme" name="classTheme" required onchange="toggleOtherThemeInput()">
+                <option value="Introduction to RISC-V">Introduction to RISC-V</option>
+                <option value="RISC-V Instruction Set Basics">RISC-V Instruction Set Basics</option>
+                <option value="Advanced Instructions and Extensions">Advanced Instructions and Extensions</option>
+                <option value="RISC-V Software Ecosystem">RISC-V Software Ecosystem</option>
+                <option value="RISC-V Hardware Implementation">RISC-V Hardware Implementation</option>
+                <option value="Operating Systems and RISC-V">Operating Systems and RISC-V</option>
+                <option value="RISC-V in Embedded Systems">RISC-V in Embedded Systems</option>
+                <option value="RISC-V in Data Centers">RISC-V in Data Centers</option>
+                <option value="RISC-V on the Cloud">RISC-V on the Cloud</option>
+                <option value="Security and RISC-V">Security and RISC-V</option>
+                <option value="Performance Optimization and Benchmarking">Performance Optimization and Benchmarking</option>
+                <option value="Future of RISC-V">Future of RISC-V and Closing Remarks</option>
+                <option value="other">Other</option>
+            </select><br>
+
+            <div id="otherThemeInput" class="hidden">
+                <label for="otherTheme">Other Theme:</label>
+                <input type="text" id="otherTheme" name="otherTheme"><br>
+            </div>
+
+            <label for="presentationTitle">Presentation Title:</label>
+            <input type="text" id="presentationTitle" name="presentationTitle" required><br>
+
+            <p>Indicate your availability to present. RISC-V Technical Sessions are held only on Thursdays:</p>
+
+            <div class="date-label">First Option:</div>
+            <input type="date" id="date1" name="availableDates" class="date-input" onchange="validateDates()"><br>
+
+            <div class="date-label">Second Option:</div>
+            <input type="date" id="date2" name="availableDates" class="date-input" onchange="validateDates()"><br>
+
+            <div class="date-label">Third Option:</div>
+            <input type="date" id="date3" name="availableDates" class="date-input" onchange="validateDates()"><br>
+
+            <p id="dateError" style="color: red;"></p>
+
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+
+    <script>
+        function toggleOtherThemeInput() {
+            var themeSelect = document.getElementById('classTheme');
+            var otherInput = document.getElementById('otherThemeInput');
+            if (themeSelect.value === 'other') {
+                otherInput.classList.remove('hidden');
+            } else {
+                otherInput.classList.add('hidden');
+            }
+        }
+        function validateDates() {
+            let dates = [
+                document.getElementById('date1').value,
+                document.getElementById('date2').value,
+                document.getElementById('date3').value
+            ];
+
+            let uniqueDates = new Set(dates.filter(Boolean)); // Filter out empty values and ensure uniqueness
+
+            // Check if all dates are Thursdays and unique
+            let allThursdays = true;
+            let allUnique = uniqueDates.size === dates.filter(Boolean).length; // Compare size of unique dates with original list
+
+            dates.forEach((date, index) => {
+                if (date) {
+                    let day = new Date(date).getUTCDay();
+                    if (day !== 4) {
+                        allThursdays = false; // Not a Thursday
+                        document.getElementById('dateError').innerText = "RISC-V Technical Sessions are only held on Thursdays. Please select only Thursdays!";
+                        document.getElementById('date' + (index + 1)).value = ""; // Reset the current date input
+                    }
+                }
+            });
+
+            if (!allUnique) {
+                document.getElementById('dateError').innerText = "Please select three different Thursdays!";
+                // No specific date to clear here, user must choose which one to change
+            } else if (allThursdays && allUnique) {
+                document.getElementById('dateError').innerText = ""; // Clear error message
+            }
+        }
+        document.addEventListener("DOMContentLoaded", function() {
+        // Get today's date in YYYY-MM-DD format
+        var today = new Date().toISOString().split('T')[0];
+
+        // Set the min attribute for all date inputs
+        document.getElementById('date1').setAttribute('min', today);
+        document.getElementById('date2').setAttribute('min', today);
+        document.getElementById('date3').setAttribute('min', today);
+        });
+    </script>
+</body>
+
+</html>
